@@ -244,12 +244,8 @@
   "dates": {
     "edit": "Modifier les dates",
     "none": "Aucune",
-    "save": "Enregistrer les dates",
+    "save": "Enregistrer",
     "dueDate": "Échéance",
-    "today": "Aujourd'hui",
-    "tomorrow": "Demain",
-    "nextWeek": "La semaine prochaine",
-    "noDate": "Aucune date",
     "time": "Heure",
     "pin": "Garder cette heure en %{zone}",
     "deadline": "Date limite",
@@ -293,7 +289,9 @@
     "remindNone": "Aucun",
     "more": "Plus d'options",
     "remove": "Supprimer",
-    "startAfterDue": "La date de début doit précéder l'échéance."
+    "startAfterDue": "La date de début doit précéder l'échéance.",
+    "done": "Terminé",
+    "startShort": "Début"
   },
   "section": {
     "new": "Nouvelle section",

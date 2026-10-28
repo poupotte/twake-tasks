@@ -244,12 +244,8 @@
   "dates": {
     "edit": "Termine bearbeiten",
     "none": "Keine",
-    "save": "Termine speichern",
+    "save": "Speichern",
     "dueDate": "Fälligkeitsdatum",
-    "today": "Heute",
-    "tomorrow": "Morgen",
-    "nextWeek": "Nächste Woche",
-    "noDate": "Kein Datum",
     "time": "Uhrzeit",
     "pin": "Diese Uhrzeit in %{zone} beibehalten",
     "deadline": "Frist",
@@ -293,7 +289,9 @@
     "remindNone": "Keine",
     "more": "Weitere Optionen",
     "remove": "Entfernen",
-    "startAfterDue": "Das Startdatum muss vor dem Fälligkeitsdatum liegen."
+    "startAfterDue": "Das Startdatum muss vor dem Fälligkeitsdatum liegen.",
+    "done": "Erledigt",
+    "startShort": "Beginn"
   },
   "section": {
     "new": "Neuer Abschnitt",

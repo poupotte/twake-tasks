@@ -244,12 +244,8 @@
   "dates": {
     "edit": "Edit dates",
     "none": "None",
-    "save": "Save dates",
+    "save": "Save",
     "dueDate": "Due date",
-    "today": "Today",
-    "tomorrow": "Tomorrow",
-    "nextWeek": "Next week",
-    "noDate": "No date",
     "time": "Time",
     "pin": "Keep this time in %{zone}",
     "deadline": "Deadline",
@@ -293,7 +289,9 @@
     "remindNone": "None",
     "more": "More options",
     "remove": "Remove",
-    "startAfterDue": "The start date must come before the due date."
+    "startAfterDue": "The start date must come before the due date.",
+    "done": "Done",
+    "startShort": "Start"
   },
   "section": {
     "new": "New section",

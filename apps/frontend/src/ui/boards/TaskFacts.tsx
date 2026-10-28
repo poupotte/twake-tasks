@@ -1,5 +1,5 @@
 import { Avatar } from '@linagora/twake-mui'
-import { CalendarToday, Flag, Icon } from '@linagora/twake-icons'
+import { CalendarToday, Check, Flag, Icon } from '@linagora/twake-icons'
 import type { ReactElement } from 'react'
 
 import { AvatarStack, MetaChip } from '@/ds/Columns'
@@ -73,7 +73,7 @@ export function DueChip({ task }: { task: Task }): ReactElement | null {
   const day = shortDay(task.dueDate, lang)
   return (
     <MetaChip
-      icon={<Icon icon={CalendarToday} />}
+      icon={<Icon icon={state === 'done' ? Check : CalendarToday} />}
       tone={DUE_TONE[state]}
       label={[
         task.startDate &&

@@ -1,11 +1,21 @@
 import '@/ds/dayjsLocales'
 
-import { Box, Button, Collapse, Popover } from '@linagora/twake-mui'
+import { Cross, Icon } from '@linagora/twake-icons'
+import {
+  Box,
+  Button,
+  Collapse,
+  IconButton,
+  Popover,
+  Typography
+} from '@linagora/twake-mui'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar'
+import { DateField } from '@mui/x-date-pickers/DateField'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { TimeField } from '@mui/x-date-pickers/TimeField'
 import {
   deDE,
   enUS,
@@ -160,6 +170,65 @@ export function DayField({
   )
 }
 
+/** A day typed in, without a picker of its own; `focused` tells a calendar it is the one it fills. */
+export function DayInput({
+  label,
+  value,
+  onChange,
+  onFocus,
+  disabled = false
+}: {
+  label: string
+  value: string
+  onChange: (day: string) => void
+  onFocus?: () => void
+  disabled?: boolean
+}): ReactElement {
+  return (
+    <DateField
+      label={label}
+      value={parse(value)}
+      disabled={disabled}
+      size="small"
+      fullWidth
+      {...(onFocus && { onFocus })}
+      onChange={(next: Dayjs | null) => {
+        if (next === null) onChange('')
+        else if (next.isValid()) onChange(next.format(DAY))
+      }}
+    />
+  )
+}
+
+/** A 24-hour HH:mm time typed in, empty for none, whatever the browser's own format. */
+export function TimeInput({
+  label,
+  value,
+  onChange,
+  disabled = false
+}: {
+  label: string
+  value: string
+  onChange: (time: string) => void
+  disabled?: boolean
+}): ReactElement {
+  return (
+    <TimeField
+      label={label}
+      value={value ? dayjs(`2000-01-01T${value}`) : null}
+      ampm={false}
+      format="HH:mm"
+      disabled={disabled}
+      size="small"
+      fullWidth
+      onChange={(next: Dayjs | null) => {
+        if (next === null) onChange('')
+        else if (next.isValid()) onChange(next.format('HH:mm'))
+      }}
+    />
+  )
+}
+
 /** Moments are local YYYY-MM-DDTHH:mm strings, empty for none. */
 export function MomentField({
   label,
@@ -189,6 +258,8 @@ export function EditorPopover({
   onClose,
   onSubmit,
   width = 320,
+  title,
+  closeLabel = '',
   children
 }: {
   label: string
@@ -196,6 +267,9 @@ export function EditorPopover({
   onClose: () => void
   onSubmit: () => void
   width?: number
+  /** A heading with a close button, like a small dialog's. */
+  title?: string
+  closeLabel?: string
   children: ReactNode
 }): ReactElement {
   return (
@@ -233,6 +307,22 @@ export function EditorPopover({
           '& .MuiFormControlLabel-label': { typography: 'body2' }
         }}
       >
+        {title && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
+          >
+            <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
+              {title}
+            </Typography>
+            <IconButton size="small" aria-label={closeLabel} onClick={onClose}>
+              <Icon icon={Cross} size={16} />
+            </IconButton>
+          </Box>
+        )}
         {children}
       </Box>
     </Popover>
@@ -287,13 +377,18 @@ export function MoreFields({
   )
 }
 
-export function QuickPicks({
-  children
-}: {
-  children: ReactNode
-}): ReactElement {
+/** A day and its time on one line, the time just wide enough for HH:mm. */
+export function TimeRow({ children }: { children: ReactNode }): ReactElement {
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>{children}</Box>
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 1fr) 104px',
+        gap: 1
+      }}
+    >
+      {children}
+    </Box>
   )
 }
 

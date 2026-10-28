@@ -3,7 +3,6 @@ import {
   Button,
   Checkbox,
   Chip,
-  Divider,
   FormControlLabel,
   IconButton,
   MenuItem,
@@ -12,29 +11,36 @@ import {
 } from '@linagora/twake-mui'
 import { useState, type ReactElement } from 'react'
 
-import { Row } from '@/ds/Columns'
+import { Row, Stack } from '@/ds/Columns'
 import {
   DayCalendar,
   DayField,
+  DayInput,
   EditorActions,
   EditorPopover,
   FieldRow,
   MoreFields,
-  QuickPicks
+  TimeInput,
+  TimeRow
 } from '@/ds/Pickers'
 import type { Reminder } from '@/application/boards'
 import type { Duration, Recurrence, Task } from '@/domain/board'
 import {
   dueLabel,
+  dueState,
   formatDay,
   localToday,
   localZone,
-  recurrenceLabel
+  recurrenceLabel,
+  shortDay,
+  type DueState
 } from '@/ui/boards/dueLabel'
 import {
   useAddReminder,
+  useBoard,
   useBoardChange,
   useDeleteReminder,
+  useMoveTask,
   useReminders
 } from '@/ui/boards/queries'
 import { useI18n } from '@/ui/i18n/useI18n'
@@ -154,36 +160,75 @@ function inDays(days: number): string {
   return day.toISOString().slice(0, 10)
 }
 
-const untilNextMonday = (): number => 8 - (today().getUTCDay() || 7)
-
 const hasDates = (task: Task): boolean =>
   task.startDate !== null ||
   task.dueDate !== null ||
   task.deadline !== null ||
   task.duration !== null
 
-function Summary({ task }: { task: Task }): ReactElement {
-  const { t, lang } = useI18n()
+const STATE_COLOR = {
+  upcoming: 'default',
+  soon: 'warning',
+  overdue: 'error',
+  done: 'success'
+} as const satisfies Record<DueState, string>
+
+/** The span as the card's badge reads it, "3 Nov – Nov 7, 2026, 17:00". */
+function spanLabel(task: Task, lang: string): string | null {
   const due = dueLabel(task, lang)
+  if (task.startDate && due) return `${shortDay(task.startDate, lang)} – ${due}`
+  if (task.startDate) return formatDay(task.startDate, lang)
+  return due
+}
+
+// The rest of the dates, under the badge.
+function Extras({ task }: { task: Task }): ReactElement | null {
+  const { t, lang } = useI18n()
   const facts = [
-    task.startDate &&
-      t('dates.startOn', { date: formatDay(task.startDate, lang) }),
-    due && t('board.due', { date: due }),
+    task.recurrence && recurrenceLabel(t, task.recurrence),
     task.deadline &&
       t('dates.deadlineOn', { date: formatDay(task.deadline, lang) }),
     task.duration &&
-      t(`dates.${task.duration.unit}`, { amount: task.duration.amount }),
-    task.recurrence && recurrenceLabel(t, task.recurrence)
+      t(`dates.${task.duration.unit}`, { amount: task.duration.amount })
   ].filter(Boolean)
+  if (facts.length === 0) return null
+  return (
+    <Typography variant="caption" color="textSecondary">
+      {facts.join(' · ')}
+    </Typography>
+  )
+}
 
-  if (facts.length === 0) {
-    return (
-      <Typography variant="body2" color="textSecondary">
-        {t('dates.none')}
-      </Typography>
-    )
+// Ticking "Done" completes the task: by moving it to the completed section
+// when it sits in a section, as on the list layout.
+function useDone(task: Task, boardId: string) {
+  const board = useBoard(boardId)
+  const complete = useBoardChange(boardId, (api, done: boolean) =>
+    api.completeTask(boardId, task.id, done ? 'completed' : null)
+  )
+  const move = useMoveTask(boardId)
+  const sections = board.data?.sections ?? []
+  const section = sections.find(each => each.id === task.sectionId)
+  const done = section
+    ? section.category === 'completed'
+    : task.completedAt !== null
+  const target = section
+    ? sections.find(
+        each => each.category === (done ? 'unstarted' : 'completed')
+      )
+    : undefined
+  return {
+    done,
+    disabled:
+      task.canceledAt !== null ||
+      (section ? !target || move.isPending : complete.isPending),
+    toggle: (checked: boolean) => {
+      if (!section) complete.mutate(checked)
+      else if (target) {
+        move.mutate({ taskId: task.id, move: { sectionId: target.id } })
+      }
+    }
   }
-  return <Typography variant="body2">{facts.join(' · ')}</Typography>
 }
 
 export function Dates({
@@ -195,23 +240,57 @@ export function Dates({
   boardId: string
   editable: boolean
 }): ReactElement {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const [anchor, setAnchor] = useState<HTMLElement | null>(null)
+  const label = spanLabel(task, lang)
+  const done = useDone(task, boardId)
+  // The box can be ticked before the board catches up with the completion.
+  const state = done.done ? 'done' : (dueState(task) ?? 'upcoming')
 
   return (
-    <Row>
-      <Summary task={task} />
-      {editable && (
-        <IconButton
-          size="small"
-          aria-label={t('dates.edit')}
-          onClick={event => {
-            setAnchor(event.currentTarget)
-          }}
-        >
-          <Icon icon={Pen} size={14} />
-        </IconButton>
-      )}
+    <Stack>
+      <Row>
+        {label ? (
+          <Chip
+            size="small"
+            label={label}
+            color={STATE_COLOR[state]}
+            variant={state === 'upcoming' ? 'outlined' : 'filled'}
+          />
+        ) : (
+          <Typography variant="body2" color="textSecondary">
+            {t('dates.none')}
+          </Typography>
+        )}
+        {task.dueDate && (
+          <FormControlLabel
+            label={t('dates.done')}
+            slotProps={{ typography: { variant: 'body2' } }}
+            disabled={!editable || done.disabled}
+            control={
+              <Checkbox
+                size="small"
+                checked={done.done}
+                onChange={event => {
+                  done.toggle(event.target.checked)
+                }}
+              />
+            }
+          />
+        )}
+        {editable && (
+          <IconButton
+            size="small"
+            aria-label={t('dates.edit')}
+            onClick={event => {
+              setAnchor(event.currentTarget)
+            }}
+          >
+            <Icon icon={Pen} size={14} />
+          </IconButton>
+        )}
+      </Row>
+      <Extras task={task} />
       {anchor && (
         <DatesEditor
           task={task}
@@ -222,7 +301,7 @@ export function Dates({
           }}
         />
       )}
-    </Row>
+    </Stack>
   )
 }
 
@@ -321,12 +400,6 @@ function DatesForm({
       set({ dueDate: day, hasDue: day !== '' })
     }
   }
-  const picks = [
-    { label: t('dates.today'), day: inDays(0) },
-    { label: t('dates.tomorrow'), day: inDays(1) },
-    { label: t('dates.nextWeek'), day: inDays(untilNextMonday()) },
-    { label: t('dates.noDate'), day: '' }
-  ]
   const remove = () => {
     save.mutate(
       {
@@ -344,6 +417,8 @@ function DatesForm({
   return (
     <EditorPopover
       label={t('task.dates')}
+      title={t('task.dates')}
+      closeLabel={t('task.close')}
       anchor={anchor}
       width={360}
       onClose={onClose}
@@ -357,24 +432,6 @@ function DatesForm({
         referenceDay={startDate || dueDate}
         onChange={pick}
       />
-      <QuickPicks>
-        {picks.map(quick => (
-          <Chip
-            key={quick.label}
-            size="small"
-            label={quick.label}
-            variant={
-              (target === 'start' ? startDate : dueDate) === quick.day
-                ? 'filled'
-                : 'outlined'
-            }
-            onClick={() => {
-              pick(quick.day)
-            }}
-          />
-        ))}
-      </QuickPicks>
-      <Divider />
       <FormControlLabel
         label={t('dates.start')}
         control={
@@ -392,8 +449,8 @@ function DatesForm({
           />
         }
       />
-      <DayField
-        label={t('dates.start')}
+      <DayInput
+        label={t('dates.startShort')}
         value={startDate}
         disabled={!draft.hasStart}
         onFocus={() => {
@@ -420,43 +477,27 @@ function DatesForm({
           />
         }
       />
-      <DayField
-        label={t('dates.dueDate')}
-        value={dueDate}
-        disabled={!draft.hasDue}
-        onFocus={() => {
-          setTarget('due')
-        }}
-        onChange={day => {
-          set({ dueDate: day })
-        }}
-      />
-      <TextField
-        type="time"
-        label={t('dates.time')}
-        value={draft.dueTime}
-        disabled={!dueDate}
-        onChange={event => {
-          set({ dueTime: event.target.value })
-        }}
-        size="small"
-        fullWidth
-        slotProps={{ inputLabel: { shrink: true } }}
-      />
-      {dueDate && draft.dueTime && (
-        <FormControlLabel
-          label={t('dates.pin', { zone: task.dueZone ?? localZone() })}
-          control={
-            <Checkbox
-              size="small"
-              checked={draft.pinned}
-              onChange={event => {
-                set({ pinned: event.target.checked })
-              }}
-            />
-          }
+      <TimeRow>
+        <DayInput
+          label={t('dates.dueDate')}
+          value={dueDate}
+          disabled={!draft.hasDue}
+          onFocus={() => {
+            setTarget('due')
+          }}
+          onChange={day => {
+            set({ dueDate: day })
+          }}
         />
-      )}
+        <TimeInput
+          label={t('dates.time')}
+          value={draft.dueTime}
+          disabled={!dueDate}
+          onChange={dueTime => {
+            set({ dueTime })
+          }}
+        />
+      </TimeRow>
       {startAfterDue && (
         <Typography role="alert" variant="caption" color="error">
           {t('dates.startAfterDue')}
@@ -541,8 +582,25 @@ function DatesForm({
       </TextField>
       <MoreFields
         label={t('dates.more')}
-        open={task.deadline !== null || task.duration !== null}
+        open={
+          task.deadline !== null ||
+          task.duration !== null ||
+          task.dueZone !== null
+        }
       >
+        <FormControlLabel
+          disabled={!dueDate || !draft.dueTime}
+          label={t('dates.pin', { zone: task.dueZone ?? localZone() })}
+          control={
+            <Checkbox
+              size="small"
+              checked={draft.pinned}
+              onChange={event => {
+                set({ pinned: event.target.checked })
+              }}
+            />
+          }
+        />
         <DayField
           label={t('dates.deadline')}
           value={draft.deadline}
@@ -580,21 +638,17 @@ function DatesForm({
           {t('dates.saveFailed')}
         </Typography>
       )}
-      <EditorActions
-        start={
-          hasDates(task) && (
-            <Button
-              variant="text"
-              color="error"
-              size="small"
-              disabled={save.isPending}
-              onClick={remove}
-            >
-              {t('dates.remove')}
-            </Button>
-          )
-        }
-      >
+      <EditorActions>
+        {hasDates(task) && (
+          <Button
+            variant="secondary"
+            size="small"
+            disabled={save.isPending}
+            onClick={remove}
+          >
+            {t('dates.remove')}
+          </Button>
+        )}
         <Button
           type="submit"
           size="small"

@@ -244,12 +244,8 @@
   "dates": {
     "edit": "Editar fechas",
     "none": "Ninguna",
-    "save": "Guardar fechas",
+    "save": "Guardar",
     "dueDate": "Fecha de vencimiento",
-    "today": "Hoy",
-    "tomorrow": "Mañana",
-    "nextWeek": "La próxima semana",
-    "noDate": "Sin fecha",
     "time": "Hora",
     "pin": "Mantener esta hora en %{zone}",
     "deadline": "Fecha límite",
@@ -293,7 +289,9 @@
     "remindNone": "Ninguno",
     "more": "Más opciones",
     "remove": "Quitar",
-    "startAfterDue": "La fecha de inicio debe ser anterior al vencimiento."
+    "startAfterDue": "La fecha de inicio debe ser anterior al vencimiento.",
+    "done": "Completada",
+    "startShort": "Inicio"
   },
   "section": {
     "new": "Nueva sección",

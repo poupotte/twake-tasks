@@ -415,6 +415,15 @@ export function Checklist({
   )
 }
 
+/** Lines under each other, close together. */
+export function Stack({ children }: { children: ReactNode }): ReactElement {
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+      {children}
+    </Box>
+  )
+}
+
 export function Row({ children }: { children: ReactNode }): ReactElement {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>{children}</Box>

@@ -244,12 +244,8 @@
   "dates": {
     "edit": "Sửa ngày",
     "none": "Không có",
-    "save": "Lưu ngày",
+    "save": "Lưu",
     "dueDate": "Hạn",
-    "today": "Hôm nay",
-    "tomorrow": "Ngày mai",
-    "nextWeek": "Tuần sau",
-    "noDate": "Không có ngày",
     "time": "Giờ",
     "pin": "Giữ giờ này theo %{zone}",
     "deadline": "Hạn chót",
@@ -293,7 +289,9 @@
     "remindNone": "Không",
     "more": "Tùy chọn khác",
     "remove": "Xóa",
-    "startAfterDue": "Ngày bắt đầu phải trước ngày đến hạn."
+    "startAfterDue": "Ngày bắt đầu phải trước ngày đến hạn.",
+    "done": "Đã xong",
+    "startShort": "Bắt đầu"
   },
   "section": {
     "new": "Mục mới",

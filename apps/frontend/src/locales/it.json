@@ -244,12 +244,8 @@
   "dates": {
     "edit": "Modifica date",
     "none": "Nessuna",
-    "save": "Salva date",
+    "save": "Salva",
     "dueDate": "Data di scadenza",
-    "today": "Oggi",
-    "tomorrow": "Domani",
-    "nextWeek": "Settimana prossima",
-    "noDate": "Nessuna data",
     "time": "Ora",
     "pin": "Mantieni quest’ora in %{zone}",
     "deadline": "Termine ultimo",
@@ -293,7 +289,9 @@
     "remindNone": "Nessuno",
     "more": "Altre opzioni",
     "remove": "Rimuovi",
-    "startAfterDue": "La data di inizio deve precedere la scadenza."
+    "startAfterDue": "La data di inizio deve precedere la scadenza.",
+    "done": "Completata",
+    "startShort": "Inizio"
   },
   "section": {
     "new": "Nuova sezione",
