@@ -499,6 +499,7 @@ export async function describeTasks(
     parentId: task.parentId,
     title: task.title,
     priority: task.priority,
+    startDate: task.startDate,
     dueDate: task.dueDate,
     dueTime: task.dueTime?.slice(0, 5) ?? null,
     dueZone: task.dueZone,

@@ -149,7 +149,10 @@
     "addFailed": "Die Aufgabe konnte nicht hinzugefügt werden.",
     "rename": "Board umbenennen",
     "renameName": "Board-Name",
-    "renameFailed": "Das Board konnte nicht umbenannt werden."
+    "renameFailed": "Das Board konnte nicht umbenannt werden.",
+    "dueSoon": "Bald fällig, %{date}",
+    "dueDone": "Erledigt, fällig am %{date}",
+    "span": "%{start} – %{due}"
   },
   "task": {
     "description": "Beschreibung",
@@ -234,7 +237,9 @@
     "unlabeled": "%{actor} hat das Label %{name} entfernt",
     "someone": "eine Person, die das Board verlassen hat",
     "someLabel": "ein gelöschtes Label",
-    "someSection": "einem gelöschten Abschnitt"
+    "someSection": "einem gelöschten Abschnitt",
+    "startDate": "%{actor} hat das Startdatum auf %{date} gesetzt",
+    "startDateCleared": "%{actor} hat das Startdatum entfernt"
   },
   "dates": {
     "edit": "Termine bearbeiten",
@@ -273,7 +278,22 @@
       "weeksAfterCompletion": "Jede Woche nach Erledigung |||| Alle %{smart_count} Wochen nach Erledigung",
       "monthsAfterCompletion": "Jeden Monat nach Erledigung |||| Alle %{smart_count} Monate nach Erledigung",
       "yearsAfterCompletion": "Jedes Jahr nach Erledigung |||| Alle %{smart_count} Jahre nach Erledigung"
-    }
+    },
+    "start": "Startdatum",
+    "startOn": "Beginnt am %{date}",
+    "due": "Fälligkeitsdatum",
+    "repeat": "Wiederholung",
+    "repeatNever": "Nie",
+    "repeatDaily": "Jeden Tag",
+    "repeatWeekly": "Jede Woche",
+    "repeatMonthly": "Jeden Monat",
+    "repeatYearly": "Jedes Jahr",
+    "repeatCustom": "Benutzerdefiniert",
+    "remind": "Erinnerung",
+    "remindNone": "Keine",
+    "more": "Weitere Optionen",
+    "remove": "Entfernen",
+    "startAfterDue": "Das Startdatum muss vor dem Fälligkeitsdatum liegen."
   },
   "section": {
     "new": "Neuer Abschnitt",

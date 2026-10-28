@@ -98,4 +98,48 @@ describe('task dates', () => {
     expect(unknownZone.statusCode).toBe(400)
     expect(emptyDuration.statusCode).toBe(400)
   })
+  it('keeps a start date, alone or before the due date, and logs it', async () => {
+    const { edit, read, history } = await aTaskOf(aUser())
+
+    const alone = await edit({ startDate: '2026-11-03' })
+    const afterAlone = await read()
+    const span = await edit({ dueDate: '2026-11-07', dueTime: '17:00' })
+    const afterSpan = await read()
+    await edit({ startDate: null })
+
+    expect(alone.statusCode).toBe(204)
+    expect(afterAlone).toMatchObject({ startDate: '2026-11-03', dueDate: null })
+    expect(span.statusCode).toBe(204)
+    expect(afterSpan).toMatchObject({
+      startDate: '2026-11-03',
+      dueDate: '2026-11-07',
+      dueTime: '17:00'
+    })
+    expect(await read()).toMatchObject({
+      startDate: null,
+      dueDate: '2026-11-07'
+    })
+    expect(
+      (await history())
+        .filter(entry => entry.field === 'startDate')
+        .map(entry => entry.to)
+    ).toEqual(expect.arrayContaining(['2026-11-03', null]))
+  })
+
+  it('refuses a start date after the due date', async () => {
+    const { edit, read } = await aTaskOf(aUser())
+    await edit({ dueDate: '2026-11-07' })
+
+    const late = await edit({ startDate: '2026-11-08' })
+    await edit({ startDate: '2026-11-03' })
+    const earlyDue = await edit({ dueDate: '2026-11-01' })
+
+    expect(late.statusCode).toBe(400)
+    expect(late.json()).toEqual({ error: 'invalid_dates' })
+    expect(earlyDue.statusCode).toBe(400)
+    expect(await read()).toMatchObject({
+      startDate: '2026-11-03',
+      dueDate: '2026-11-07'
+    })
+  })
 })

@@ -35,12 +35,12 @@ export function localToday(): string {
   return `${parts.year}-${parts.month}-${parts.day}`
 }
 
-/** The instant a YYYY-MM-DDTHH:mm wall clock time shows in the local zone. */
-export function zonedInstant(wallClock: string): Date {
+/** The instant a YYYY-MM-DDTHH:mm wall clock time shows in a zone, the local one by default. */
+export function zonedInstant(wallClock: string, zone = localZone()): Date {
   const asUtc = Date.parse(`${wallClock}Z`)
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat('en-US', {
-      timeZone: localZone(),
+      timeZone: zone,
       hourCycle: 'h23',
       year: 'numeric',
       month: 'numeric',
@@ -78,14 +78,36 @@ export function formatDay(day: string, lang: string): string {
   }).format(new Date(day))
 }
 
-// Late is red and today is amber, but only while the task is still open.
-export function urgency(
-  task: Pick<Task, 'dueDate' | 'completedAt' | 'canceledAt'>
-): 'neutral' | 'warning' | 'error' {
-  if (!task.dueDate || task.completedAt || task.canceledAt) return 'neutral'
-  const today = localToday()
-  if (task.dueDate < today) return 'error'
-  return task.dueDate === today ? 'warning' : 'neutral'
+export type DueState = 'upcoming' | 'soon' | 'overdue' | 'done'
+
+const DAY_MS = 24 * 60 * 60 * 1000
+
+/**
+ * Where a due date stands, as on the card's badge: done once completed, late
+ * once its time has passed, soon within the next 24 hours. A day without a
+ * time is due at its end, so it is soon on the day itself. Canceled tasks and
+ * tasks without a due date have no state.
+ */
+export function dueState(
+  task: Pick<
+    Task,
+    'dueDate' | 'dueTime' | 'dueZone' | 'completedAt' | 'canceledAt'
+  >,
+  now: Date = new Date()
+): DueState | null {
+  if (!task.dueDate || task.canceledAt) return null
+  if (task.completedAt) return 'done'
+  if (!task.dueTime) {
+    const today = localToday()
+    if (task.dueDate < today) return 'overdue'
+    return task.dueDate === today ? 'soon' : 'upcoming'
+  }
+  const due = zonedInstant(
+    `${task.dueDate}T${task.dueTime}`,
+    task.dueZone ?? localZone()
+  ).getTime()
+  if (due <= now.getTime()) return 'overdue'
+  return due - now.getTime() <= DAY_MS ? 'soon' : 'upcoming'
 }
 
 export function shortDay(day: string, lang: string): string {

@@ -5,7 +5,13 @@ import type { ReactElement } from 'react'
 import { AvatarStack, MetaChip } from '@/ds/Columns'
 import type { Person, Priority, Task } from '@/domain/board'
 import { displayName } from '@/domain/person'
-import { dueLabel, shortDay, urgency } from '@/ui/boards/dueLabel'
+import {
+  dueLabel,
+  dueState,
+  formatDay,
+  shortDay,
+  type DueState
+} from '@/ui/boards/dueLabel'
 import { PersonAvatar } from '@/ui/boards/PersonAvatar'
 import { useI18n } from '@/ui/i18n/useI18n'
 
@@ -33,22 +39,53 @@ export function PriorityChip({
   )
 }
 
+const DUE_TONE = {
+  upcoming: 'neutral',
+  soon: 'warning',
+  overdue: 'error',
+  done: 'success'
+} as const satisfies Record<DueState, string>
+
+const DUE_LABEL = {
+  upcoming: 'board.due',
+  soon: 'board.dueSoon',
+  overdue: 'board.overdue',
+  done: 'board.dueDone'
+} as const satisfies Record<DueState, string>
+
+// Like a Trello badge: grey ahead of time, amber within a day, red once late
+// and green once done; a start date makes it a span.
 export function DueChip({ task }: { task: Task }): ReactElement | null {
   const { t, lang } = useI18n()
   const due = dueLabel(task, lang)
-  if (!task.dueDate || !due) return null
-  const tone = urgency(task)
+  if (!task.dueDate || !due) {
+    if (!task.startDate) return null
+    return (
+      <MetaChip
+        icon={<Icon icon={CalendarToday} />}
+        label={t('dates.startOn', { date: formatDay(task.startDate, lang) })}
+      >
+        {shortDay(task.startDate, lang)}
+      </MetaChip>
+    )
+  }
+  const state = dueState(task) ?? 'upcoming'
+  const day = shortDay(task.dueDate, lang)
   return (
     <MetaChip
       icon={<Icon icon={CalendarToday} />}
-      tone={tone}
-      label={
-        tone === 'error'
-          ? t('board.overdue', { date: due })
-          : t('board.due', { date: due })
-      }
+      tone={DUE_TONE[state]}
+      label={[
+        task.startDate &&
+          t('dates.startOn', { date: formatDay(task.startDate, lang) }),
+        t(DUE_LABEL[state], { date: due })
+      ]
+        .filter(Boolean)
+        .join(', ')}
     >
-      {shortDay(task.dueDate, lang)}
+      {task.startDate
+        ? t('board.span', { start: shortDay(task.startDate, lang), due: day })
+        : day}
     </MetaChip>
   )
 }

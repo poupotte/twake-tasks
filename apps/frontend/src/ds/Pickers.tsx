@@ -1,6 +1,6 @@
 import '@/ds/dayjsLocales'
 
-import { Box, Popover } from '@linagora/twake-mui'
+import { Box, Button, Collapse, Popover } from '@linagora/twake-mui'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
@@ -16,7 +16,12 @@ import {
   viVN
 } from '@mui/x-date-pickers/locales'
 import dayjs, { type Dayjs } from 'dayjs'
-import type { ComponentProps, ReactElement, ReactNode } from 'react'
+import {
+  useState,
+  type ComponentProps,
+  type ReactElement,
+  type ReactNode
+} from 'react'
 
 type LocaleText = NonNullable<
   ComponentProps<typeof LocalizationProvider>['localeText']
@@ -60,19 +65,54 @@ export function PickersProvider({
 
 const parse = (value: string): Dayjs | null => (value ? dayjs(value) : null)
 
-/** Days are YYYY-MM-DD strings, empty for none. */
+/**
+ * Days are YYYY-MM-DD strings, empty for none. With `rangeStart`, the days
+ * from it to `value` show as one span, its first day marked like the value.
+ */
 export function DayCalendar({
   value,
-  onChange
+  onChange,
+  rangeStart = '',
+  referenceDay = ''
 }: {
   value: string
   onChange: (day: string) => void
+  rangeStart?: string
+  /** The month to open on when there is no value. */
+  referenceDay?: string
 }): ReactElement {
+  const spanEnd = value || rangeStart
   return (
     <DateCalendar
       value={parse(value)}
+      {...(referenceDay && !value && { referenceDate: dayjs(referenceDay) })}
       onChange={(next: Dayjs | null) => {
         onChange(next?.format(DAY) ?? '')
+      }}
+      slotProps={{
+        day: ownerState => {
+          const day = ownerState.day.format(DAY)
+          if (!rangeStart || ownerState.isDayOutsideMonth) return {}
+          if (day === rangeStart && day !== value) {
+            return {
+              sx: theme => ({
+                bgcolor: theme.vars.palette.primary.main,
+                color: theme.vars.palette.primary.contrastText,
+                '&:hover, &:focus': {
+                  bgcolor: theme.vars.palette.primary.dark
+                }
+              })
+            }
+          }
+          if (day > rangeStart && day < spanEnd) {
+            return {
+              sx: theme => ({
+                bgcolor: theme.alpha(theme.vars.palette.primary.main, 0.12)
+              })
+            }
+          }
+          return {}
+        }
       }}
       sx={{
         width: '100%',
@@ -90,21 +130,30 @@ export function DayCalendar({
 export function DayField({
   label,
   value,
-  onChange
+  onChange,
+  onFocus,
+  disabled = false
 }: {
   label: string
   value: string
   onChange: (day: string) => void
+  onFocus?: () => void
+  disabled?: boolean
 }): ReactElement {
   return (
     <DatePicker
       label={label}
       value={parse(value)}
+      disabled={disabled}
       onChange={(next: Dayjs | null) => {
         onChange(next?.isValid() ? next.format(DAY) : '')
       }}
       slotProps={{
-        textField: { size: 'small', fullWidth: true },
+        textField: {
+          size: 'small',
+          fullWidth: true,
+          ...(onFocus && { onFocus })
+        },
         field: { clearable: true }
       }}
     />
@@ -186,15 +235,51 @@ export function EditorPopover({
   )
 }
 
+/** The form's buttons on the right, and an optional one apart on the left. */
 export function EditorActions({
+  start,
   children
 }: {
+  start?: ReactNode
   children: ReactNode
 }): ReactElement {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+      {start && <Box sx={{ mr: 'auto' }}>{start}</Box>}
       {children}
     </Box>
+  )
+}
+
+/** Fields folded under a text button, open from the start when `open`. */
+export function MoreFields({
+  label,
+  open,
+  children
+}: {
+  label: string
+  open: boolean
+  children: ReactNode
+}): ReactElement {
+  const [shown, setShown] = useState(open)
+  return (
+    <>
+      <Box>
+        <Button
+          variant="text"
+          size="small"
+          aria-expanded={shown}
+          onClick={() => {
+            setShown(was => !was)
+          }}
+        >
+          {label}
+        </Button>
+      </Box>
+      <Collapse in={shown} unmountOnExit>
+        <Box sx={{ display: 'grid', gap: 1, pt: 0.5 }}>{children}</Box>
+      </Collapse>
+    </>
   )
 }
 

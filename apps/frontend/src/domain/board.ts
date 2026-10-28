@@ -55,6 +55,8 @@ export interface Task {
   parentId: string | null
   title: string
   priority: Priority | null
+  /** The day work begins, alone or opening a span that ends on `dueDate`. */
+  startDate: string | null
   dueDate: string | null
   /** `HH:MM`, the same wall clock time everywhere unless `dueZone` is set. */
   dueTime: string | null

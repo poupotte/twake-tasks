@@ -149,7 +149,10 @@
     "addFailed": "La tâche n'a pas pu être ajoutée.",
     "rename": "Renommer le tableau",
     "renameName": "Nom du tableau",
-    "renameFailed": "Le tableau n'a pas pu être renommé."
+    "renameFailed": "Le tableau n'a pas pu être renommé.",
+    "dueSoon": "Bientôt, échéance le %{date}",
+    "dueDone": "Terminée, échéance le %{date}",
+    "span": "%{start} – %{due}"
   },
   "task": {
     "description": "Description",
@@ -234,7 +237,9 @@
     "unlabeled": "%{actor} a retiré l'étiquette %{name}",
     "someone": "une personne qui a quitté le tableau",
     "someLabel": "une étiquette supprimée",
-    "someSection": "une section supprimée"
+    "someSection": "une section supprimée",
+    "startDate": "%{actor} a fixé la date de début au %{date}",
+    "startDateCleared": "%{actor} a retiré la date de début"
   },
   "dates": {
     "edit": "Modifier les dates",
@@ -273,7 +278,22 @@
       "weeksAfterCompletion": "Chaque semaine après l'achèvement |||| Toutes les %{smart_count} semaines après l'achèvement",
       "monthsAfterCompletion": "Chaque mois après l'achèvement |||| Tous les %{smart_count} mois après l'achèvement",
       "yearsAfterCompletion": "Chaque année après l'achèvement |||| Tous les %{smart_count} ans après l'achèvement"
-    }
+    },
+    "start": "Date de début",
+    "startOn": "Début le %{date}",
+    "due": "Date d'échéance",
+    "repeat": "Récurrence",
+    "repeatNever": "Jamais",
+    "repeatDaily": "Chaque jour",
+    "repeatWeekly": "Chaque semaine",
+    "repeatMonthly": "Chaque mois",
+    "repeatYearly": "Chaque année",
+    "repeatCustom": "Personnalisée",
+    "remind": "Rappel",
+    "remindNone": "Aucun",
+    "more": "Plus d'options",
+    "remove": "Supprimer",
+    "startAfterDue": "La date de début doit précéder l'échéance."
   },
   "section": {
     "new": "Nouvelle section",

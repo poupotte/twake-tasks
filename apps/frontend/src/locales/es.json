@@ -149,7 +149,10 @@
     "addFailed": "No se pudo añadir la tarea.",
     "rename": "Renombrar tablero",
     "renameName": "Nombre del tablero",
-    "renameFailed": "No se pudo renombrar el tablero."
+    "renameFailed": "No se pudo renombrar el tablero.",
+    "dueSoon": "Vence pronto, %{date}",
+    "dueDone": "Completada, vencía %{date}",
+    "span": "%{start} – %{due}"
   },
   "task": {
     "description": "Descripción",
@@ -234,7 +237,9 @@
     "unlabeled": "%{actor} quitó la etiqueta %{name}",
     "someone": "alguien que dejó el tablero",
     "someLabel": "una etiqueta eliminada",
-    "someSection": "una sección eliminada"
+    "someSection": "una sección eliminada",
+    "startDate": "%{actor} fijó la fecha de inicio el %{date}",
+    "startDateCleared": "%{actor} quitó la fecha de inicio"
   },
   "dates": {
     "edit": "Editar fechas",
@@ -273,7 +278,22 @@
       "weeksAfterCompletion": "Cada semana tras completarla |||| Cada %{smart_count} semanas tras completarla",
       "monthsAfterCompletion": "Cada mes tras completarla |||| Cada %{smart_count} meses tras completarla",
       "yearsAfterCompletion": "Cada año tras completarla |||| Cada %{smart_count} años tras completarla"
-    }
+    },
+    "start": "Fecha de inicio",
+    "startOn": "Empieza el %{date}",
+    "due": "Fecha de vencimiento",
+    "repeat": "Repetición",
+    "repeatNever": "Nunca",
+    "repeatDaily": "Cada día",
+    "repeatWeekly": "Cada semana",
+    "repeatMonthly": "Cada mes",
+    "repeatYearly": "Cada año",
+    "repeatCustom": "Personalizada",
+    "remind": "Recordatorio",
+    "remindNone": "Ninguno",
+    "more": "Más opciones",
+    "remove": "Quitar",
+    "startAfterDue": "La fecha de inicio debe ser anterior al vencimiento."
   },
   "section": {
     "new": "Nueva sección",

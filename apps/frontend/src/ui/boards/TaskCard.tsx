@@ -50,6 +50,7 @@ export function TaskCard({
   const facts =
     task.priority !== null ||
     task.dueDate !== null ||
+    task.startDate !== null ||
     children.length > 0 ||
     task.commentCount > 0
   const choose = (action: () => void) => () => {

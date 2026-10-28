@@ -74,6 +74,7 @@ export function aTask(section: Section | null, overrides: Partial<Task> = {}) {
     parentId: null,
     title: 'Logo',
     priority: null,
+    startDate: null,
     dueDate: null,
     dueTime: null,
     dueZone: null,

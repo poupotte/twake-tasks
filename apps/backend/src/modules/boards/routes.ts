@@ -111,6 +111,7 @@ const taskChanges = z
   .object({
     title: taskTitle,
     priority: z.int().min(1).max(4).nullable(),
+    startDate: z.iso.date().nullable(),
     dueDate: z.iso.date().nullable(),
     dueTime: z.iso.time({ precision: -1 }).nullable(),
     dueZone: z.string().max(64).refine(isTimeZone).nullable(),

@@ -149,7 +149,10 @@
     "addFailed": "Impossibile aggiungere l’attività.",
     "rename": "Rinomina bacheca",
     "renameName": "Nome della bacheca",
-    "renameFailed": "Impossibile rinominare la bacheca."
+    "renameFailed": "Impossibile rinominare la bacheca.",
+    "dueSoon": "In scadenza, %{date}",
+    "dueDone": "Completata, scadenza %{date}",
+    "span": "%{start} – %{due}"
   },
   "task": {
     "description": "Descrizione",
@@ -234,7 +237,9 @@
     "unlabeled": "%{actor} ha rimosso l’etichetta %{name}",
     "someone": "una persona che ha lasciato la bacheca",
     "someLabel": "un’etichetta eliminata",
-    "someSection": "una sezione eliminata"
+    "someSection": "una sezione eliminata",
+    "startDate": "%{actor} ha impostato la data di inizio al %{date}",
+    "startDateCleared": "%{actor} ha rimosso la data di inizio"
   },
   "dates": {
     "edit": "Modifica date",
@@ -273,7 +278,22 @@
       "weeksAfterCompletion": "Ogni settimana dopo il completamento |||| Ogni %{smart_count} settimane dopo il completamento",
       "monthsAfterCompletion": "Ogni mese dopo il completamento |||| Ogni %{smart_count} mesi dopo il completamento",
       "yearsAfterCompletion": "Ogni anno dopo il completamento |||| Ogni %{smart_count} anni dopo il completamento"
-    }
+    },
+    "start": "Data di inizio",
+    "startOn": "Inizia il %{date}",
+    "due": "Data di scadenza",
+    "repeat": "Ripetizione",
+    "repeatNever": "Mai",
+    "repeatDaily": "Ogni giorno",
+    "repeatWeekly": "Ogni settimana",
+    "repeatMonthly": "Ogni mese",
+    "repeatYearly": "Ogni anno",
+    "repeatCustom": "Personalizzata",
+    "remind": "Promemoria",
+    "remindNone": "Nessuno",
+    "more": "Altre opzioni",
+    "remove": "Rimuovi",
+    "startAfterDue": "La data di inizio deve precedere la scadenza."
   },
   "section": {
     "new": "Nuova sezione",

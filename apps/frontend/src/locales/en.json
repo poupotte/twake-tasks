@@ -149,7 +149,10 @@
     "addFailed": "The task could not be added.",
     "rename": "Rename board",
     "renameName": "Board name",
-    "renameFailed": "The board could not be renamed."
+    "renameFailed": "The board could not be renamed.",
+    "dueSoon": "Due soon, %{date}",
+    "dueDone": "Done, due %{date}",
+    "span": "%{start} – %{due}"
   },
   "task": {
     "description": "Description",
@@ -234,7 +237,9 @@
     "unlabeled": "%{actor} removed the label %{name}",
     "someone": "someone who left the board",
     "someLabel": "a deleted label",
-    "someSection": "a deleted section"
+    "someSection": "a deleted section",
+    "startDate": "%{actor} set the start date to %{date}",
+    "startDateCleared": "%{actor} removed the start date"
   },
   "dates": {
     "edit": "Edit dates",
@@ -273,7 +278,22 @@
       "weeksAfterCompletion": "Every week after completion |||| Every %{smart_count} weeks after completion",
       "monthsAfterCompletion": "Every month after completion |||| Every %{smart_count} months after completion",
       "yearsAfterCompletion": "Every year after completion |||| Every %{smart_count} years after completion"
-    }
+    },
+    "start": "Start date",
+    "startOn": "Starts %{date}",
+    "due": "Due date",
+    "repeat": "Repeat",
+    "repeatNever": "Never",
+    "repeatDaily": "Every day",
+    "repeatWeekly": "Every week",
+    "repeatMonthly": "Every month",
+    "repeatYearly": "Every year",
+    "repeatCustom": "Custom",
+    "remind": "Reminder",
+    "remindNone": "None",
+    "more": "More options",
+    "remove": "Remove",
+    "startAfterDue": "The start date must come before the due date."
   },
   "section": {
     "new": "New section",

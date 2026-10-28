@@ -30,13 +30,33 @@ describe('TaskCard', () => {
     expect(card.getByLabelText('Overdue, due Mar 2, 2020')).toBeInTheDocument()
   })
 
-  it('does not mark a done task as overdue', async () => {
+  it('marks a done task as done rather than overdue', async () => {
     const card = await cardOf({
       dueDate: '2020-03-02',
       completedAt: '2020-03-01T10:00:00Z'
     })
 
-    expect(card.getByLabelText('Due Mar 2, 2020')).toBeInTheDocument()
+    expect(card.getByLabelText('Done, due Mar 2, 2020')).toBeInTheDocument()
+  })
+
+  it('marks a due time within a day as due soon', async () => {
+    const soon = new Date(Date.now() + 3 * 60 * 60 * 1000)
+    const day = soon.toISOString().slice(0, 10)
+    const time = soon.toISOString().slice(11, 16)
+    const card = await cardOf({ dueDate: day, dueTime: time, dueZone: 'UTC' })
+
+    expect(card.getByLabelText(/^Due soon, /)).toBeInTheDocument()
+  })
+
+  it('shows a start date and a due date as one span', async () => {
+    const card = await cardOf({
+      startDate: '2099-11-03',
+      dueDate: '2099-11-07'
+    })
+
+    expect(
+      card.getByLabelText('Starts Nov 3, 2099, Due Nov 7, 2099')
+    ).toHaveTextContent('Nov 3, 2099 – Nov 7, 2099')
   })
 
   it('counts the comments', async () => {

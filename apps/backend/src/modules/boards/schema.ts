@@ -275,6 +275,9 @@ export const tasks = pgTable.withRLS(
     descriptionText: text('description_text').notNull().default(''),
     descriptionVersion: integer('description_version').notNull().default(0),
     priority: smallint(),
+    // The day work is planned to begin; it may stand alone or open a span
+    // that ends on the due date.
+    startDate: date('start_date', { mode: 'string' }),
     dueDate: date('due_date', { mode: 'string' }),
     dueTime: time('due_time', { precision: 0 }),
     // Without a zone, the time is the same wall clock time everywhere.
@@ -323,6 +326,10 @@ export const tasks = pgTable.withRLS(
       foreignColumns: [boards.tenant, boards.id]
     }),
     check('tasks_priority', sql`${table.priority} between 1 and 4`),
+    check(
+      'tasks_start_before_due',
+      sql`${table.startDate} is null or ${table.dueDate} is null or ${table.startDate} <= ${table.dueDate}`
+    ),
     check(
       'tasks_due_time_on_a_date',
       sql`${table.dueTime} is null or ${table.dueDate} is not null`

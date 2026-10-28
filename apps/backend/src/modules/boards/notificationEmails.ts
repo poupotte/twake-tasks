@@ -192,6 +192,11 @@ async function describe(
         actor,
         isDay(entry.to) ? formatDay(lang, entry.to) : null
       )
+    case 'startDate':
+      return messages.startDate(
+        actor,
+        isDay(entry.to) ? formatDay(lang, entry.to) : null
+      )
     case 'section':
       return messages.section(actor, entry.name ? plain(entry.name) : null)
     case 'board': {

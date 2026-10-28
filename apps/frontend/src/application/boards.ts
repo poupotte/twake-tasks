@@ -46,6 +46,7 @@ export type TaskChanges = Partial<
     Task,
     | 'title'
     | 'priority'
+    | 'startDate'
     | 'dueDate'
     | 'dueTime'
     | 'dueZone'

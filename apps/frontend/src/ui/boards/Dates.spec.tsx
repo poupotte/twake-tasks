@@ -12,6 +12,12 @@ function logoBoard() {
   return { board, logo, boardsApi: fakeBoardsApi([board]) }
 }
 
+function last<T>(items: T[]): T {
+  const item = items.at(-1)
+  if (item === undefined) throw new Error('Nothing found')
+  return item
+}
+
 const change = (field: HTMLElement, value: string) => {
   fireEvent.change(field, { target: { value } })
 }
@@ -58,7 +64,10 @@ describe('Dates', () => {
     fireEvent.click(editor.getByRole('gridcell', { name: '2' }))
     change(editor.getByLabelText('Time'), '09:30')
     fireEvent.click(editor.getByRole('checkbox', { name: /Keep this time in/ }))
-    fireEvent.click(editor.getByRole('button', { name: /Choose date/ }))
+    // The deadline's picker comes after those of the start and due dates.
+    fireEvent.click(
+      last(editor.getAllByRole('button', { name: /Choose date/ }))
+    )
     const picker = (await screen.findAllByRole('dialog')).at(-1)
     fireEvent.click(
       within(picker ?? document.body).getByRole('gridcell', { name: '6' })
@@ -68,6 +77,7 @@ describe('Dates', () => {
 
     expect(await panel.findByText(/Due Nov 2, 2026, 09:30/)).toBeVisible()
     expect(boardsApi.editTask).toHaveBeenCalledWith(board.id, logo.id, {
+      startDate: null,
       dueDate: '2026-11-02',
       dueTime: '09:30',
       dueZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -122,6 +132,8 @@ describe('Dates', () => {
     Object.assign(logo, { dueDate: '2026-11-02' })
     const { panel, editor } = await openDates(board.id, boardsApi)
 
+    fireEvent.mouseDown(editor.getByRole('combobox', { name: 'Repeat' }))
+    fireEvent.click(await screen.findByRole('option', { name: 'Custom' }))
     change(editor.getByRole('spinbutton', { name: 'Repeat every' }), '2')
     fireEvent.click(
       editor.getByRole('checkbox', { name: 'From the completion date' })
@@ -154,5 +166,104 @@ describe('Dates', () => {
         await screen.findByRole('article', { name: 'DES-1 Logo' })
       ).getByLabelText(/due Nov 2, 2026, 09:30$/i)
     ).toBeInTheDocument()
+  })
+
+  it('picks a start date, then the due date, on the same calendar', async () => {
+    const { board, logo, boardsApi } = logoBoard()
+    Object.assign(logo, { dueDate: '2026-11-10' })
+    const { panel, editor } = await openDates(board.id, boardsApi)
+
+    fireEvent.click(editor.getByRole('checkbox', { name: 'Start date' }))
+    fireEvent.click(editor.getByRole('gridcell', { name: '3' }))
+    fireEvent.click(editor.getByRole('gridcell', { name: '7' }))
+    fireEvent.click(editor.getByRole('button', { name: 'Save dates' }))
+
+    expect(await panel.findByText(/Starts Nov 3, 2026/)).toBeVisible()
+    expect(boardsApi.editTask).toHaveBeenCalledWith(
+      board.id,
+      logo.id,
+      expect.objectContaining({
+        startDate: '2026-11-03',
+        dueDate: '2026-11-07'
+      })
+    )
+  })
+
+  it('refuses a start date after the due date', async () => {
+    const { board, logo, boardsApi } = logoBoard()
+    Object.assign(logo, { dueDate: '2026-11-02' })
+    const { editor } = await openDates(board.id, boardsApi)
+
+    fireEvent.click(editor.getByRole('checkbox', { name: 'Start date' }))
+    fireEvent.click(editor.getByRole('gridcell', { name: '9' }))
+
+    expect(
+      editor.getByText('The start date must come before the due date.')
+    ).toBeVisible()
+    expect(editor.getByRole('button', { name: 'Save dates' })).toBeDisabled()
+  })
+
+  it('repeats every week from the preset list', async () => {
+    const { board, logo, boardsApi } = logoBoard()
+    Object.assign(logo, { dueDate: '2026-11-02' })
+    const { panel, editor } = await openDates(board.id, boardsApi)
+
+    fireEvent.mouseDown(editor.getByRole('combobox', { name: 'Repeat' }))
+    fireEvent.click(await screen.findByRole('option', { name: 'Every week' }))
+    fireEvent.click(editor.getByRole('button', { name: 'Save dates' }))
+
+    expect(await panel.findByText(/Every week/)).toBeVisible()
+    expect(boardsApi.editTask).toHaveBeenCalledWith(
+      board.id,
+      logo.id,
+      expect.objectContaining({
+        recurrence: { every: 1, unit: 'weeks', fromCompletion: false }
+      })
+    )
+  })
+
+  it('sets a reminder a day before the due date', async () => {
+    const { board, logo, boardsApi } = logoBoard()
+    Object.assign(logo, { dueDate: '2026-11-02', dueTime: '09:30' })
+    const { editor } = await openDates(board.id, boardsApi)
+
+    fireEvent.mouseDown(editor.getByRole('combobox', { name: 'Reminder' }))
+    fireEvent.click(await screen.findByRole('option', { name: '1 day before' }))
+    fireEvent.click(editor.getByRole('button', { name: 'Save dates' }))
+
+    await waitFor(() => {
+      expect(boardsApi.addReminder).toHaveBeenCalledWith(board.id, logo.id, {
+        beforeMinutes: 1440,
+        zone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      })
+    })
+  })
+
+  it('removes every date at once', async () => {
+    const { board, logo, boardsApi } = logoBoard()
+    Object.assign(logo, {
+      startDate: '2026-10-30',
+      dueDate: '2026-11-02',
+      deadline: '2026-11-06'
+    })
+    const { panel, editor } = await openDates(board.id, boardsApi)
+
+    fireEvent.click(editor.getByRole('button', { name: 'Remove' }))
+
+    await waitFor(() => {
+      expect(boardsApi.editTask).toHaveBeenCalledWith(
+        board.id,
+        logo.id,
+        expect.objectContaining({
+          startDate: null,
+          dueDate: null,
+          deadline: null,
+          recurrence: null
+        })
+      )
+    })
+    expect(
+      panel.getByRole('button', { name: 'Edit dates' }).closest('dd')
+    ).toHaveTextContent('None')
   })
 })

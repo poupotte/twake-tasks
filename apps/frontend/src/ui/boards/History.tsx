@@ -53,6 +53,10 @@ function describe(
       return added
         ? t('history.dueDate', { actor, date: dueOf(value, lang) })
         : t('history.dueDateCleared', { actor })
+    case 'startDate':
+      return added
+        ? t('history.startDate', { actor, date: formatDay(value, lang) })
+        : t('history.startDateCleared', { actor })
     case 'deadline':
       return added
         ? t('history.deadline', { actor, date: formatDay(value, lang) })

@@ -11,6 +11,7 @@ export interface NotificationMessages {
   priority: (actor: string, level: string | null) => string
   dueDate: (actor: string, date: string | null) => string
   deadline: (actor: string, date: string | null) => string
+  startDate: (actor: string, date: string | null) => string
   section: (actor: string, section: string | null) => string
   board: (actor: string, board: string) => string
   completed: (actor: string) => string
@@ -58,6 +59,10 @@ export const NOTIFICATION_MESSAGES: Record<Language, NotificationMessages> = {
       date
         ? `${actor} set the deadline to ${date}`
         : `${actor} removed the deadline`,
+    startDate: (actor, date) =>
+      date
+        ? `${actor} set the start date to ${date}`
+        : `${actor} removed the start date`,
     section: (actor, section) =>
       section
         ? `${actor} moved the task to ${section}`
@@ -122,6 +127,10 @@ export const NOTIFICATION_MESSAGES: Record<Language, NotificationMessages> = {
       date
         ? `${actor} a fixé la date limite au ${date}`
         : `${actor} a retiré la date limite`,
+    startDate: (actor, date) =>
+      date
+        ? `${actor} a fixé la date de début au ${date}`
+        : `${actor} a retiré la date de début`,
     section: (actor, section) =>
       section
         ? `${actor} a déplacé la tâche dans ${section}`
@@ -188,6 +197,10 @@ export const NOTIFICATION_MESSAGES: Record<Language, NotificationMessages> = {
       date
         ? `${actor} hat die Frist auf ${date} gesetzt`
         : `${actor} hat die Frist entfernt`,
+    startDate: (actor, date) =>
+      date
+        ? `${actor} hat das Startdatum auf ${date} gesetzt`
+        : `${actor} hat das Startdatum entfernt`,
     section: (actor, section) =>
       section
         ? `${actor} hat die Aufgabe nach ${section} verschoben`
@@ -254,6 +267,10 @@ export const NOTIFICATION_MESSAGES: Record<Language, NotificationMessages> = {
       date
         ? `${actor} ha impostato il termine al ${date}`
         : `${actor} ha rimosso il termine`,
+    startDate: (actor, date) =>
+      date
+        ? `${actor} ha impostato la data di inizio al ${date}`
+        : `${actor} ha rimosso la data di inizio`,
     section: (actor, section) =>
       section
         ? `${actor} ha spostato l’attività in ${section}`
@@ -319,6 +336,10 @@ export const NOTIFICATION_MESSAGES: Record<Language, NotificationMessages> = {
       date
         ? `${actor} fijó la fecha límite el ${date}`
         : `${actor} quitó la fecha límite`,
+    startDate: (actor, date) =>
+      date
+        ? `${actor} fijó la fecha de inicio el ${date}`
+        : `${actor} quitó la fecha de inicio`,
     section: (actor, section) =>
       section
         ? `${actor} movió la tarea a ${section}`
@@ -380,6 +401,10 @@ export const NOTIFICATION_MESSAGES: Record<Language, NotificationMessages> = {
       date
         ? `${actor} установил(а) крайний срок: ${date}`
         : `${actor} убрал(а) крайний срок`,
+    startDate: (actor, date) =>
+      date
+        ? `${actor} установил(а) дату начала: ${date}`
+        : `${actor} убрал(а) дату начала`,
     section: (actor, section) =>
       section
         ? `${actor} переместил(а) задачу в ${section}`
@@ -441,6 +466,10 @@ export const NOTIFICATION_MESSAGES: Record<Language, NotificationMessages> = {
       date ? `${actor} đã đặt hạn vào ${date}` : `${actor} đã bỏ hạn`,
     deadline: (actor, date) =>
       date ? `${actor} đã đặt hạn chót vào ${date}` : `${actor} đã bỏ hạn chót`,
+    startDate: (actor, date) =>
+      date
+        ? `${actor} đã đặt ngày bắt đầu vào ${date}`
+        : `${actor} đã bỏ ngày bắt đầu`,
     section: (actor, section) =>
       section
         ? `${actor} đã chuyển công việc sang ${section}`

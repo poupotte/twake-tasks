@@ -149,7 +149,10 @@
     "addFailed": "Không thể thêm công việc.",
     "rename": "Đổi tên bảng",
     "renameName": "Tên bảng",
-    "renameFailed": "Không thể đổi tên bảng."
+    "renameFailed": "Không thể đổi tên bảng.",
+    "dueSoon": "Sắp đến hạn, %{date}",
+    "dueDone": "Đã xong, hạn %{date}",
+    "span": "%{start} – %{due}"
   },
   "task": {
     "description": "Mô tả",
@@ -234,7 +237,9 @@
     "unlabeled": "%{actor} đã bỏ nhãn %{name}",
     "someone": "người đã rời bảng",
     "someLabel": "nhãn đã xóa",
-    "someSection": "mục đã xóa"
+    "someSection": "mục đã xóa",
+    "startDate": "%{actor} đã đặt ngày bắt đầu vào %{date}",
+    "startDateCleared": "%{actor} đã bỏ ngày bắt đầu"
   },
   "dates": {
     "edit": "Sửa ngày",
@@ -273,7 +278,22 @@
       "weeksAfterCompletion": "Mỗi %{smart_count} tuần sau khi hoàn thành",
       "monthsAfterCompletion": "Mỗi %{smart_count} tháng sau khi hoàn thành",
       "yearsAfterCompletion": "Mỗi %{smart_count} năm sau khi hoàn thành"
-    }
+    },
+    "start": "Ngày bắt đầu",
+    "startOn": "Bắt đầu %{date}",
+    "due": "Ngày đến hạn",
+    "repeat": "Lặp lại",
+    "repeatNever": "Không bao giờ",
+    "repeatDaily": "Mỗi ngày",
+    "repeatWeekly": "Mỗi tuần",
+    "repeatMonthly": "Mỗi tháng",
+    "repeatYearly": "Mỗi năm",
+    "repeatCustom": "Tùy chỉnh",
+    "remind": "Lời nhắc",
+    "remindNone": "Không",
+    "more": "Tùy chọn khác",
+    "remove": "Xóa",
+    "startAfterDue": "Ngày bắt đầu phải trước ngày đến hạn."
   },
   "section": {
     "new": "Mục mới",

@@ -226,6 +226,7 @@ type Maybe<T> = T | undefined
 export interface TaskChanges {
   title?: Maybe<string>
   priority?: Maybe<number | null>
+  startDate?: Maybe<string | null>
   dueDate?: Maybe<string | null>
   dueTime?: Maybe<string | null>
   dueZone?: Maybe<string | null>
@@ -246,6 +247,11 @@ function withDates(task: typeof tasks.$inferSelect, changes: TaskChanges) {
         ? task.dueTime
         : changes.dueTime
   if ((changes.dueTime || recurrence) && dueDate === null) {
+    throw new Refused('invalid_dates')
+  }
+  const startDate =
+    changes.startDate === undefined ? task.startDate : changes.startDate
+  if (startDate !== null && dueDate !== null && startDate > dueDate) {
     throw new Refused('invalid_dates')
   }
   const rule = dueDate === null ? null : recurrence
@@ -279,16 +285,17 @@ async function recur(tx: Tx, task: typeof tasks.$inferSelect) {
     sql`select log_task_change(${task.id}, ${task.organizationId}, 'completion', null, '"completed"'::jsonb)`
   )
   const dueDate = nextOccurrence(task.dueDate, rule, todayIn(task.dueZone))
+  const moved = daysBetween(task.dueDate, dueDate)
   await tx
     .update(tasks)
     .set({
       dueDate,
+      // The start keeps its distance to the due date.
+      ...(task.startDate !== null && {
+        startDate: shift(task.startDate, moved, 'days')
+      }),
       ...(task.deadline !== null && {
-        deadline: shift(
-          task.deadline,
-          daysBetween(task.dueDate, dueDate),
-          'days'
-        )
+        deadline: shift(task.deadline, moved, 'days')
       })
     })
     .where(eq(tasks.id, task.id))
