@@ -345,6 +345,7 @@ function DatesForm({
     <EditorPopover
       label={t('task.dates')}
       anchor={anchor}
+      width={360}
       onClose={onClose}
       onSubmit={() => {
         if (!startAfterDue) save.mutate(draft, { onSuccess: onClose })
@@ -419,30 +420,29 @@ function DatesForm({
           />
         }
       />
-      <FieldRow>
-        <DayField
-          label={t('dates.dueDate')}
-          value={dueDate}
-          disabled={!draft.hasDue}
-          onFocus={() => {
-            setTarget('due')
-          }}
-          onChange={day => {
-            set({ dueDate: day })
-          }}
-        />
-        <TextField
-          type="time"
-          label={t('dates.time')}
-          value={draft.dueTime}
-          disabled={!dueDate}
-          onChange={event => {
-            set({ dueTime: event.target.value })
-          }}
-          size="small"
-          slotProps={{ inputLabel: { shrink: true } }}
-        />
-      </FieldRow>
+      <DayField
+        label={t('dates.dueDate')}
+        value={dueDate}
+        disabled={!draft.hasDue}
+        onFocus={() => {
+          setTarget('due')
+        }}
+        onChange={day => {
+          set({ dueDate: day })
+        }}
+      />
+      <TextField
+        type="time"
+        label={t('dates.time')}
+        value={draft.dueTime}
+        disabled={!dueDate}
+        onChange={event => {
+          set({ dueTime: event.target.value })
+        }}
+        size="small"
+        fullWidth
+        slotProps={{ inputLabel: { shrink: true } }}
+      />
       {dueDate && draft.dueTime && (
         <FormControlLabel
           label={t('dates.pin', { zone: task.dueZone ?? localZone() })}

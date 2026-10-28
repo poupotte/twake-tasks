@@ -188,12 +188,14 @@ export function EditorPopover({
   anchor,
   onClose,
   onSubmit,
+  width = 320,
   children
 }: {
   label: string
   anchor: HTMLElement | null
   onClose: () => void
   onSubmit: () => void
+  width?: number
   children: ReactNode
 }): ReactElement {
   return (
@@ -206,7 +208,7 @@ export function EditorPopover({
         paper: {
           role: 'dialog',
           'aria-label': label,
-          sx: { width: 320, maxWidth: 'calc(100vw - 32px)' }
+          sx: { width, maxWidth: 'calc(100vw - 32px)' }
         }
       }}
     >
@@ -219,6 +221,8 @@ export function EditorPopover({
         sx={{
           p: 1.5,
           display: 'grid',
+          // One column as wide as the popover, whatever the fields' own widths
+          gridTemplateColumns: 'minmax(0, 1fr)',
           gap: 1,
           // twake-mui makes small fields 48px high, MUI's own 40px fit here
           '& .MuiInputBase-sizeSmall:not(.MuiInputBase-multiline) .MuiInputBase-input':
