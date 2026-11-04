@@ -18,6 +18,7 @@ import {
 import { useState, type ReactElement, type ReactNode } from 'react'
 
 import { CRUMB_BAR, CrumbHostContext } from '@/ds/CrumbBar'
+import { PAGE_EMPTY } from '@/ds/EmptyState'
 import { Icon } from '@/ds/Icon'
 import { PanelHostContext } from '@/ds/SidePanel'
 
@@ -95,7 +96,13 @@ export function AppFrame({
                   flex: '1 1 auto',
                   minHeight: 0,
                   overflow: 'auto',
-                  isolation: 'isolate'
+                  isolation: 'isolate',
+                  // An illustrated empty state takes the page's whole height.
+                  [`&:has(.${PAGE_EMPTY}), & :has(.${PAGE_EMPTY})`]: {
+                    display: 'flex',
+                    flexDirection: 'column'
+                  },
+                  [`& :has(.${PAGE_EMPTY})`]: { flex: '1 0 auto' }
                 }}
               >
                 {children}

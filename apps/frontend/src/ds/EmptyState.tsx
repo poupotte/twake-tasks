@@ -5,6 +5,7 @@ import {
 } from '@linagora/twake-mui'
 import type { ReactElement, ReactNode } from 'react'
 
+import { CRUMB_BAR } from '@/ds/CrumbBar'
 import { Icon, type IconProps } from '@/ds/Icon'
 
 export function EmptyState({
@@ -27,8 +28,8 @@ export function EmptyState({
   /** The title is the page's own, for a page that is only this state. */
   heading?: boolean
 }): ReactElement {
-  const badge = illustrated ? 160 : compact ? 40 : 64
-  return (
+  const badge = illustrated ? 100 : compact ? 40 : 64
+  const empty = (
     <Empty
       role={tone === 'error' ? 'alert' : 'status'}
       icon={
@@ -52,7 +53,7 @@ export function EmptyState({
               : undefined
           }}
         >
-          <Icon icon={icon} size={illustrated ? 100 : compact ? 18 : 28} />
+          <Icon icon={icon} size={illustrated ? 64 : compact ? 18 : 28} />
         </Box>
       }
       title={title}
@@ -79,7 +80,31 @@ export function EmptyState({
       {action && <Box sx={{ mt: 2 }}>{action}</Box>}
     </Empty>
   )
+  if (!illustrated) return empty
+  // Fills what the page leaves below its content, see AppFrame, and stands in
+  // its middle. Kept clear of a bar as tall as the title bar above, it is in
+  // the middle of the whole page.
+  return (
+    <Box
+      className={PAGE_EMPTY}
+      sx={{
+        flex: '1 0 auto',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        pb: {
+          xs: `${String(CRUMB_BAR.minHeight.xs)}px`,
+          md: `${String(CRUMB_BAR.minHeight.md)}px`
+        }
+      }}
+    >
+      {empty}
+    </Box>
+  )
 }
+
+/** The class of an illustrated empty state, which takes the page's height. */
+export const PAGE_EMPTY = 'EmptyState-page'
 
 /** Twake's list placeholder, named for those who cannot see it. */
 export function ListSkeleton({
